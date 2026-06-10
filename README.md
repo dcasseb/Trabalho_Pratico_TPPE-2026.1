@@ -71,5 +71,3 @@ pytest -m caso5   # Caso 5 – IDs diferentes
 ```bash
 pytest tests/test_caso1_grafia.py -v
 ```
-
-README a ser concluído
