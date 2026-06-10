@@ -6,11 +6,11 @@ UnB · FCTE · TPPE – Técnicas de Programação para Plataformas Emergentes
 
 ## Integrantes do Grupo
 
-| Nome | Matrícula |
-| Davi Casseb | 211031682 |
-| Nathan Abreu |  221022696 |
-| Douglas Marinho | 221037465 |
-| Igor Justino | 211061897 |
+| Nome             | Matrícula |
+| Davi Casseb      | 211031682 |
+| Nathan Abreu     | 221022696 |
+| Douglas Marinho  | 221037465 |
+| Igor Justino     | 211061897 |
 | Henrique Alencar | 211061860 |
 
 ---
