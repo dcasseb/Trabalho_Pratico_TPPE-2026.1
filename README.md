@@ -6,11 +6,13 @@ UnB · FCTE · TPPE – Técnicas de Programação para Plataformas Emergentes
 
 ## Integrantes do Grupo
 
-| Nome | Matrícula |
-|------|-----------|
-|      |           |
-|      |           |
-|      |           |
+| Nome             | Matrícula |
+| ---------------- | --------- |
+| Davi Casseb      | 211031682 |
+| Nathan Abreu     | 221022696 |
+| Douglas Marinho  | 221037465 |
+| Igor Justino     | 211061897 |
+| Henrique Alencar | 211061860 |
 
 ---
 
@@ -69,5 +71,3 @@ pytest -m caso5   # Caso 5 – IDs diferentes
 ```bash
 pytest tests/test_caso1_grafia.py -v
 ```
-
-README a ser concluído

@@ -40,82 +40,10 @@ def validar_nomes(*nomes):
             raise ValueError("Os nomes não podem ser vazios ou conter apenas espaços")
 
 
-# ---------------------------------------------------------------------------
-# Refatoração: EXTRAIR CLASSE
-#
-# A estrutura Union-Find (conjuntos disjuntos) estava embutida em
-# Deduplicador::unificar_ids() na forma da lista `pai` e das funções aninhadas
-# encontrar()/unir(). Essa estrutura é uma responsabilidade coesa e independente
-# do domínio de deduplicação, então foi extraída para a classe ConjuntosDisjuntos.
-# ---------------------------------------------------------------------------
-class ConjuntosDisjuntos:
-
-    def __init__(self, tamanho):
-        self.pai = list(range(tamanho))
-
-    def encontrar(self, x):
-        while self.pai[x] != x:
-            self.pai[x] = self.pai[self.pai[x]]
-            x = self.pai[x]
-        return x
-
-    def unir(self, x, y):
-        rx, ry = self.encontrar(x), self.encontrar(y)
-        if rx != ry:
-            self.pai[rx] = ry
-
-
-# ---------------------------------------------------------------------------
-# Refatoração: SUBSTITUIR MÉTODO POR OBJETO-MÉTODO
-#
-# O método Deduplicador::unificar_ids() era longo, com variáveis locais (n, pai,
-# grupos, min_id_por_grupo) e funções aninhadas. Ele foi transformado no objeto
-# UnificadorIds: cada variável local virou um atributo de instância e o corpo do
-# método foi quebrado em métodos privados coesos, facilitando leitura e teste.
-# ---------------------------------------------------------------------------
-class UnificadorIds:
-
-    def __init__(self, deduplicador, registros):
-        self.deduplicador = deduplicador
-        self.registros = registros
-        self.n = len(registros)
-        self.conjuntos = ConjuntosDisjuntos(self.n)
-
-    def computar(self):
-        self._unir_equivalentes()
-        min_id_por_grupo = self._calcular_min_id_por_grupo()
-        return [
-            (min_id_por_grupo[self.conjuntos.encontrar(i)], self.registros[i][1])
-            for i in range(self.n)
-        ]
-
-    def _unir_equivalentes(self):
-        for i in range(self.n):
-            for j in range(i + 1, self.n):
-                id_i, nome_i = self.registros[i]
-                id_j, nome_j = self.registros[j]
-                if id_i != id_j and self.deduplicador._sao_mesmo_autor(nome_i, nome_j):
-                    self.conjuntos.unir(i, j)
-
-    def _calcular_min_id_por_grupo(self):
-        grupos = defaultdict(list)
-        for i in range(self.n):
-            grupos[self.conjuntos.encontrar(i)].append(self.registros[i][0])
-        return {g: min(ids) for g, ids in grupos.items()}
-
-
 class Deduplicador:
 
     def sao_equivalentes_tipografia(self, nome1, nome2):
         validar_nomes(nome1, nome2)
-        return self._normalizacoes_sao_iguais(nome1, nome2)
-
-    # Refatoração: EXTRAIR MÉTODO
-    #
-    # A expressão que comparava as duas normalizações tipográficas foi extraída
-    # para o método _normalizacoes_sao_iguais(), separando a validação (intenção)
-    # da regra de comparação propriamente dita.
-    def _normalizacoes_sao_iguais(self, nome1, nome2):
         return normalizar_tipografia(nome1) == normalizar_tipografia(nome2)
 
     def sao_equivalentes_abreviacao(self, nome_completo, nome_abreviado):
@@ -213,7 +141,33 @@ class Deduplicador:
         if not registros:
             return []
 
-        return UnificadorIds(self, registros).computar()
+        n = len(registros)
+        pai = list(range(n))
+
+        def encontrar(x):
+            while pai[x] != x:
+                pai[x] = pai[pai[x]]
+                x = pai[x]
+            return x
+
+        def unir(x, y):
+            rx, ry = encontrar(x), encontrar(y)
+            if rx != ry:
+                pai[rx] = ry
+
+        for i in range(n):
+            for j in range(i + 1, n):
+                id_i, nome_i = registros[i]
+                id_j, nome_j = registros[j]
+                if id_i != id_j and self._sao_mesmo_autor(nome_i, nome_j):
+                    unir(i, j)
+
+        grupos = defaultdict(list)
+        for i in range(n):
+            grupos[encontrar(i)].append(registros[i][0])
+
+        min_id_por_grupo = {g: min(ids) for g, ids in grupos.items()}
+        return [(min_id_por_grupo[encontrar(i)], registros[i][1]) for i in range(n)]
 
     def _sao_mesmo_autor(self, nome1, nome2):
         try:
