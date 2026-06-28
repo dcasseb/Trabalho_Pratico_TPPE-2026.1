@@ -36,6 +36,16 @@ UnB · FCTE · TPPE – Técnicas de Programação para Plataformas Emergentes
 
 ---
 
+## Refatorações (Entrega 2)
+
+| Classe/Método | Refatoração | Descrição |
+| - | - | - |
+| `Deduplicador::sao_equivalentes_tipografia()` | Extrair Método | A expressão que comparava as duas normalizações tipográficas foi extraída para o método `_normalizacoes_sao_iguais()`, separando a validação (intenção) da regra de comparação propriamente dita. |
+| `Deduplicador::unificar_ids()` | Substituir Método por Objeto Método | O método `Deduplicador::unificar_ids()` era longo, com variáveis locais (`n`, `pai`, `grupos`, `min_id_por_grupo`) e funções aninhadas. Ele foi transformado no objeto `UnificadorIds`: cada variável local virou um atributo de instância e o corpo do método foi quebrado em métodos privados coesos, facilitando leitura e teste. |
+| `Deduplicador` | Extrair classe | A estrutura Union-Find (conjuntos disjuntos) estava embutida em `Deduplicador::unificar_ids()` na forma da lista `pai` e das funções aninhadas `encontrar()` e `unir()`. Essa estrutura é uma responsabilidade coesa e independente do domínio de deduplicação, então foi extraída para a classe `ConjuntosDisjuntos`. |
+
+---
+
 ## Como Executar os Testes
 
 ### Pré-requisitos

@@ -39,15 +39,6 @@ def validar_nomes(*nomes):
         if not nome.strip():
             raise ValueError("Os nomes não podem ser vazios ou conter apenas espaços")
 
-
-# ---------------------------------------------------------------------------
-# Refatoração: EXTRAIR CLASSE
-#
-# A estrutura Union-Find (conjuntos disjuntos) estava embutida em
-# Deduplicador::unificar_ids() na forma da lista `pai` e das funções aninhadas
-# encontrar()/unir(). Essa estrutura é uma responsabilidade coesa e independente
-# do domínio de deduplicação, então foi extraída para a classe ConjuntosDisjuntos.
-# ---------------------------------------------------------------------------
 class ConjuntosDisjuntos:
 
     def __init__(self, tamanho):
@@ -64,15 +55,6 @@ class ConjuntosDisjuntos:
         if rx != ry:
             self.pai[rx] = ry
 
-
-# ---------------------------------------------------------------------------
-# Refatoração: SUBSTITUIR MÉTODO POR OBJETO-MÉTODO
-#
-# O método Deduplicador::unificar_ids() era longo, com variáveis locais (n, pai,
-# grupos, min_id_por_grupo) e funções aninhadas. Ele foi transformado no objeto
-# UnificadorIds: cada variável local virou um atributo de instância e o corpo do
-# método foi quebrado em métodos privados coesos, facilitando leitura e teste.
-# ---------------------------------------------------------------------------
 class UnificadorIds:
 
     def __init__(self, deduplicador, registros):
@@ -110,11 +92,6 @@ class Deduplicador:
         validar_nomes(nome1, nome2)
         return self._normalizacoes_sao_iguais(nome1, nome2)
 
-    # Refatoração: EXTRAIR MÉTODO
-    #
-    # A expressão que comparava as duas normalizações tipográficas foi extraída
-    # para o método _normalizacoes_sao_iguais(), separando a validação (intenção)
-    # da regra de comparação propriamente dita.
     def _normalizacoes_sao_iguais(self, nome1, nome2):
         return normalizar_tipografia(nome1) == normalizar_tipografia(nome2)
 
